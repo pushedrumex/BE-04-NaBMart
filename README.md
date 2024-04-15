@@ -117,7 +117,7 @@ TOSS_SECRET_KEY=
             <img src="https://github.com/funnysunny08.png?size=100">
         </td>
         <td>
-            <img src="https://github.com/pushedrumex.png?size=100">
+            <img src="https://github.com/pushedrumex.png" width = 100>
         </td>
     </tr>
 </table>
