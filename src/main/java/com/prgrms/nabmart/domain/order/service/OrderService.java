@@ -43,12 +43,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class OrderService {
 
     private static final Integer PAGE_SIZE = 10;
+    public static final int MINUTES_OF_CANCEL_ORDER = 30;
 
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserCouponRepository userCouponRepository;
-
+    private final OrderCancelService orderCancelService;
 
     @Transactional
     public CreateOrderResponse createOrder(final CreateOrdersCommand createOrdersCommand) {
@@ -77,17 +78,13 @@ public class OrderService {
 
     @Transactional
     public void updateOrderStatus() {
-        //30분
-        LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime expiredTime = LocalDateTime.now().minusMinutes(MINUTES_OF_CANCEL_ORDER);
         List<OrderStatus> statusList = List.of(OrderStatus.PENDING, OrderStatus.PAYING);
 
         List<Order> expiredOrders = orderRepository.findByStatusInBeforeExpiredTime(
             expiredTime, statusList);
 
-        for (Order expirdeOrder : expiredOrders) {
-            updateItemQuantity(expirdeOrder);
-            expirdeOrder.updateOrderStatus(OrderStatus.CANCELED);
-        }
+        expiredOrders.forEach(orderCancelService::cancelOrder);
     }
 
     @Transactional
@@ -104,13 +101,6 @@ public class OrderService {
     public void deleteOrder(final Long orderId, final Long userId) {
         Order order = getOrderByOrderIdAndUserId(orderId, userId);
         orderRepository.delete(order);
-    }
-
-    private static void updateItemQuantity(Order order) {
-        List<OrderItem> orderItems = order.getOrderItems();
-        for (OrderItem orderItem : orderItems) {
-            orderItem.getItem().increaseQuantity(orderItem.getQuantity());
-        }
     }
 
     @Transactional(readOnly = true)
