@@ -3,6 +3,7 @@ package com.prgrms.nabmart.domain.payment.service;
 import com.prgrms.nabmart.domain.order.Order;
 import com.prgrms.nabmart.domain.order.OrderStatus;
 import com.prgrms.nabmart.domain.order.exception.NotPayingOrderException;
+import com.prgrms.nabmart.domain.order.service.OrderCancelService;
 import com.prgrms.nabmart.domain.order.service.OrderService;
 import com.prgrms.nabmart.domain.payment.Payment;
 import com.prgrms.nabmart.domain.payment.PaymentStatus;
@@ -23,6 +24,7 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final OrderService orderService;
+    private final OrderCancelService orderCancelService;
 
     @Value("${payment.toss.success-url}")
     private String successCallBackUrl;
@@ -134,7 +136,7 @@ public class PaymentService {
         Order order = getOrderByUuidAndUserId(uuid, userId);
         validateOrderStatusWithPaying(order);
 
-        orderService.cancelOrder(order);
+        orderCancelService.cancelOrder(order);
 
         return new PaymentResponse(payment.getPaymentStatus().toString(), errorMessage);
     }

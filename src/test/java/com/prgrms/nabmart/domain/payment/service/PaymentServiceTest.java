@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 import com.prgrms.nabmart.domain.coupon.exception.InvalidUsedCouponException;
 import com.prgrms.nabmart.domain.order.Order;
 import com.prgrms.nabmart.domain.order.exception.NotPayingOrderException;
+import com.prgrms.nabmart.domain.order.service.OrderCancelService;
 import com.prgrms.nabmart.domain.order.service.OrderService;
 import com.prgrms.nabmart.domain.payment.Payment;
 import com.prgrms.nabmart.domain.payment.PaymentStatus;
@@ -50,6 +51,9 @@ class PaymentServiceTest {
 
     @Mock
     OrderService orderService;
+
+    @Mock
+    OrderCancelService orderCancelService;
 
     @Value("${payment.toss.success_url}")
     private String successCallBackUrl;
@@ -288,7 +292,7 @@ class PaymentServiceTest {
             assertThat(payment.getPaymentStatus()).isEqualTo(PaymentStatus.FAILED);
             assertThat(result).usingRecursiveComparison().isEqualTo(expected);
 
-            verify(orderService, times(1)).cancelOrder(order);
+            verify(orderCancelService, times(1)).cancelOrder(order);
 
         }
     }
