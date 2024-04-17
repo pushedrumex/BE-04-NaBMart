@@ -26,7 +26,7 @@ class CouponTest {
                 .discount(10000)
                 .description("TestDescription")
                 .minOrderPrice(1000)
-                .endAt(LocalDate.parse("2023-12-31"))
+                .endAt(LocalDate.MAX)
                 .build();
 
             // Then
