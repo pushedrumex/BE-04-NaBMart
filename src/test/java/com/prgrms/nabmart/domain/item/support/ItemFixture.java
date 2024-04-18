@@ -37,8 +37,8 @@ public final class ItemFixture {
     private static final String DESCRIPTION = "아이템설명";
     private static final int QUANTITY = 10;
     private static final int DISCOUNT = 0;
-    private static final int REVIEW_COUNT = 0;
-    private static final int LIKE_COUNT = 0;
+    private static final long REVIEW_COUNT = 0;
+    private static final long LIKE_COUNT = 0;
     private static final int RATE = 0;
     private static final int MAX_QUANTITY = 10;
     private static final Long USER_ID = 1L;

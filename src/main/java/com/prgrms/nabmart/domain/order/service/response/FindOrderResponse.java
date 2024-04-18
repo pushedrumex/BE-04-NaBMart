@@ -17,7 +17,7 @@ public record FindOrderResponse(
     public static FindOrderResponse from(Order order) {
         List<FindOrdersItemResponse> items = order.getOrderItems().stream()
             .map(FindOrdersItemResponse::from)
-            .collect(Collectors.toList());
+            .toList();
 
         return new FindOrderResponse(
             order.getOrderId(),

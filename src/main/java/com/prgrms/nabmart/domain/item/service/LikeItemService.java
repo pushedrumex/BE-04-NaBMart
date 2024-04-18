@@ -12,6 +12,7 @@ import com.prgrms.nabmart.domain.item.service.request.DeleteLikeItemCommand;
 import com.prgrms.nabmart.domain.item.service.request.FindLikeItemsCommand;
 import com.prgrms.nabmart.domain.item.service.request.RegisterLikeItemCommand;
 import com.prgrms.nabmart.domain.item.service.response.FindLikeItemsResponse;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.exception.NotFoundUserException;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
@@ -27,6 +28,7 @@ public class LikeItemService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final LikeItemRepository likeItemRepository;
+    private final StatisticsRepository statisticsRepository;
 
     @Transactional
     public Long registerLikeItem(RegisterLikeItemCommand registerLikeItemCommand) {
@@ -35,6 +37,7 @@ public class LikeItemService {
         checkDuplicateLikedItem(user, item);
         LikeItem likeItem = new LikeItem(user, item);
         likeItemRepository.save(likeItem);
+        statisticsRepository.increaseLikes(item.getItemId());
         return likeItem.getLikeItemId();
     }
 
@@ -45,6 +48,7 @@ public class LikeItemService {
             throw new UnauthorizedLikeItemException("권한이 없습니다.");
         }
         likeItemRepository.delete(likeItem);
+        statisticsRepository.decreaseLikes(likeItem.getItem().getItemId());
     }
 
     private void checkDuplicateLikedItem(final User user, final Item item) {

@@ -14,12 +14,12 @@ public record FindItemsResponse(List<FindItemResponse> items) {
     }
 
     public record FindItemResponse(Long itemId, String name, int price, int discount,
-                                   int reviewCount, int like, double rate) {
+                                   long reviewCount, long like, double rate) {
 
         public static FindItemResponse from(final Item item) {
             return new FindItemResponse(
                 item.getItemId(), item.getName(), item.getPrice(), item.getDiscount(),
-                item.getReviews().size(), item.getLikeItems().size(), item.getRate()
+                item.getStatistics().getReviews(), item.getStatistics().getLikes(), item.getRate()
             );
         }
     }

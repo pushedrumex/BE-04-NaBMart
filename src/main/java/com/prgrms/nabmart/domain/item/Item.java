@@ -5,7 +5,9 @@ import com.prgrms.nabmart.domain.category.SubCategory;
 import com.prgrms.nabmart.domain.item.exception.InvalidItemException;
 import com.prgrms.nabmart.domain.order.OrderItem;
 import com.prgrms.nabmart.domain.review.Review;
+import com.prgrms.nabmart.domain.statistics.Statistics;
 import com.prgrms.nabmart.global.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -70,14 +73,8 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private boolean isDeleted = Boolean.FALSE;
 
-    @OneToMany(mappedBy = "item")
-    private List<Review> reviews = new ArrayList<>();
-
-    @OneToMany(mappedBy = "item")
-    private List<LikeItem> likeItems = new ArrayList<>();
-
-    @OneToMany(mappedBy = "item")
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @OneToOne(mappedBy = "item", cascade = CascadeType.ALL)
+    private Statistics statistics;
 
     @Builder
     public Item(String name, int price, String description, int quantity, int discount,
@@ -95,14 +92,11 @@ public class Item extends BaseTimeEntity {
         this.maxBuyQuantity = maxBuyQuantity;
         this.mainCategory = mainCategory;
         this.subCategory = subCategory;
+        this.statistics = new Statistics(this);
     }
 
     public void decreaseQuantity(final int quantity) {
         this.quantity -= quantity;
-    }
-
-    public void increaseQuantity(final int quantity) {
-        this.quantity += quantity;
     }
 
     public void updateItem(

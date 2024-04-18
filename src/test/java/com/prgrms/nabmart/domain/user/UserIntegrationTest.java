@@ -80,11 +80,11 @@ public class UserIntegrationTest extends IntegrationTest {
     protected LikeItem likeItem = ItemFixture.likeItem(user, item);
     protected Coupon coupon = CouponFixture.coupon();
     protected UserCoupon userCoupon = new UserCoupon(user, coupon);
-    protected OrderItem orderItem = new OrderItem(item, 5);
-    protected Order order = new Order(user, List.of(orderItem));
-    protected Payment payment = PaymentFixture.pendingPayment(user, order);
+    protected OrderItem orderItem;
+    protected Order order;
+    protected Payment payment;
     protected Rider rider = DeliveryFixture.rider();
-    protected Delivery delivery = DeliveryFixture.completedDelivery(order, rider);
+    protected Delivery delivery;
 
     @BeforeEach
     void setUp() {
@@ -98,9 +98,15 @@ public class UserIntegrationTest extends IntegrationTest {
         likeItemRepository.save(likeItem);
         couponRepository.save(coupon);
         userCouponRepository.save(userCoupon);
-        orderRepository.save(order);
-        paymentRepository.save(payment);
         riderRepository.save(rider);
+
+        orderItem = new OrderItem(item, 5);
+        order = new Order(user, List.of(orderItem));
+        orderRepository.save(order);
+
+        payment = PaymentFixture.pendingPayment(user, order);
+        paymentRepository.save(payment);
+        delivery = DeliveryFixture.completedDelivery(order, rider);
         deliveryRepository.save(delivery);
     }
 
