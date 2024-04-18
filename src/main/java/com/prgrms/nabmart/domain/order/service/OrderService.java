@@ -24,6 +24,7 @@ import com.prgrms.nabmart.domain.order.service.response.FindOrdersResponse;
 import com.prgrms.nabmart.domain.order.service.response.FindPayedOrdersResponse;
 import com.prgrms.nabmart.domain.order.service.response.UpdateOrderByCouponResponse;
 import com.prgrms.nabmart.domain.payment.service.request.FindPayedOrdersCommand;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.exception.NotFoundUserException;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
@@ -49,6 +50,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final UserCouponRepository userCouponRepository;
+    private final StatisticsRepository statisticsRepository;
     private final OrderCancelService orderCancelService;
 
     @Transactional
@@ -57,8 +59,7 @@ public class OrderService {
         List<OrderItem> orderItem = createOrderItem(createOrdersCommand.createOrderRequest()
             .createOrderItemRequests());
         Order order = new Order(findUser, orderItem);
-        orderRepository.save(order).getOrderId();
-
+        orderRepository.save(order);
         return CreateOrderResponse.from(order);
     }
 
@@ -85,16 +86,6 @@ public class OrderService {
             expiredTime, statusList);
 
         expiredOrders.forEach(orderCancelService::cancelOrder);
-    }
-
-    @Transactional
-    public void cancelOrder(final Order order) {
-        order.updateOrderStatus(OrderStatus.CANCELED);
-        order.unUseCoupon();
-        order.getOrderItems().forEach(
-            orderItem -> itemRepository.increaseQuantity(orderItem.getItem().getItemId(),
-                orderItem.getQuantity())
-        );
     }
 
     @Transactional
@@ -125,6 +116,7 @@ public class OrderService {
             Integer quantity = createOrderRequest.quantity();
             validateItemQuantity(findItem, quantity);
             findItem.decreaseQuantity(quantity);
+            statisticsRepository.increaseOrders(findItem.getItemId(), quantity);
             // OrderItem 생성 및 초기화
             OrderItem orderItem = new OrderItem(findItem, quantity);
             orderItems.add(orderItem);

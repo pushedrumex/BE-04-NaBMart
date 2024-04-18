@@ -19,7 +19,7 @@ public record FindEventDetailResponse(
     }
 
     public record EventItemResponse(Long itemId, String name, int price, int discount,
-                                    int reviewCount, int like, double rate) {
+                                    long reviewCount, long like, double rate) {
 
     }
 }

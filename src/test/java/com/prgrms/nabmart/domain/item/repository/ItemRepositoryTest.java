@@ -14,6 +14,7 @@ import com.prgrms.nabmart.domain.item.ItemSortType;
 import com.prgrms.nabmart.domain.item.support.ItemFixture;
 import com.prgrms.nabmart.domain.order.OrderItem;
 import com.prgrms.nabmart.domain.order.repository.OrderItemRepository;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +41,8 @@ class ItemRepositoryTest {
     SubCategoryRepository subCategoryRepository;
     @Autowired
     OrderItemRepository orderItemRepository;
+    @Autowired
+    StatisticsRepository statisticsRepository;
     @Autowired
     EntityManager entityManager;
 
@@ -165,6 +168,7 @@ class ItemRepositoryTest {
                     mainCategory, subCategory);
                 OrderItem orderItem = new OrderItem(item, (50 - i));
                 orderItemRepository.save(orderItem);
+                statisticsRepository.increaseOrders(item.getItemId(), 50 - i);
             }
             List<Long> expectedItemIds = List.of(1L, 2L, 3L, 4L, 5L);
 
@@ -297,6 +301,7 @@ class ItemRepositoryTest {
                     subCategory);
                 OrderItem orderItem = new OrderItem(item, (50 - i));
                 orderItemRepository.save(orderItem);
+                statisticsRepository.increaseOrders(item.getItemId(), 50 - i);
             }
             List<Long> expected = List.of(1L, 2L, 3L, 4L, 5L);
 

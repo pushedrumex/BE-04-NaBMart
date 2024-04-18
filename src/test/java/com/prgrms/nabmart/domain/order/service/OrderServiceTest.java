@@ -45,6 +45,7 @@ import com.prgrms.nabmart.domain.order.service.response.FindOrderDetailResponse;
 import com.prgrms.nabmart.domain.order.service.response.FindOrdersResponse;
 import com.prgrms.nabmart.domain.order.service.response.UpdateOrderByCouponResponse;
 import com.prgrms.nabmart.domain.payment.service.request.FindPayedOrdersCommand;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
 import com.prgrms.nabmart.domain.user.support.UserFixture;
@@ -82,6 +83,9 @@ public class OrderServiceTest {
 
     @Mock
     UserCouponRepository userCouponRepository;
+
+    @Mock
+    StatisticsRepository statisticsRepository;
 
     @Nested
     @DisplayName("findOrderByIdAndUserId 메서드 실행 시")
@@ -307,27 +311,6 @@ public class OrderServiceTest {
 
         // then
         assertThat(exception).isInstanceOf(InvalidCouponException.class);
-    }
-
-    @Nested
-    @DisplayName("cancelOrder 메서드 실행 시")
-    class CancelOrderTest {
-
-        @Test
-        @DisplayName("성공")
-        void success() {
-            // given
-            Order order = pendingOrder(1L, user());
-            OrderItem orderItem = order.getOrderItems().get(0);
-
-            // when
-            orderService.cancelOrder(order);
-
-            // then
-            assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
-            verify(itemRepository, times(1)).increaseQuantity(orderItem.getItem().getItemId(),
-                orderItem.getQuantity());
-        }
     }
 
     @Nested

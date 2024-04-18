@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.prgrms.nabmart.domain.category.MainCategory;
 import com.prgrms.nabmart.domain.category.SubCategory;
@@ -23,6 +25,7 @@ import com.prgrms.nabmart.domain.item.service.request.RegisterLikeItemCommand;
 import com.prgrms.nabmart.domain.item.service.response.FindLikeItemsResponse;
 import com.prgrms.nabmart.domain.item.service.response.FindLikeItemsResponse.FindLikeItemResponse;
 import com.prgrms.nabmart.domain.item.support.ItemFixture;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.exception.NotFoundUserException;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
@@ -48,6 +51,9 @@ class LikeItemServiceTest {
 
     @Mock
     UserRepository userRepository;
+
+    @Mock
+    StatisticsRepository statisticsRepository;
 
     @Mock
     ItemRepository itemRepository;
@@ -82,6 +88,7 @@ class LikeItemServiceTest {
 
             //then
             then(likeItemRepository).should().save(any());
+            verify(statisticsRepository, times(1)).increaseLikes(likeItem.getItem().getItemId());
         }
 
         @Test
@@ -144,6 +151,7 @@ class LikeItemServiceTest {
 
             //then
             then(likeItemRepository).should().delete(any());
+            verify(statisticsRepository, times(1)).decreaseLikes(likeItem.getItem().getItemId());
         }
 
         @Test

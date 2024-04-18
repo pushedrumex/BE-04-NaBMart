@@ -32,17 +32,24 @@ public class OrderItem extends BaseTimeEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
+    @Column(nullable = false)
+    private Long itemId;
+
+    @Column(nullable = false)
+    private String itemName;
+
+    @Column(nullable = false)
+    private int itemPrice;
 
     public OrderItem(Item item, int quantity) {
-        this.item = item;
+        this.itemId = item.getItemId();
+        this.itemPrice = item.getPrice();
+        this.itemName = item.getName();
         this.quantity = quantity;
     }
 
     public int calculateSubtotal() {
-        return item.getPrice() * quantity;
+        return itemPrice * quantity;
     }
 
     public void setOrder(Order order) {

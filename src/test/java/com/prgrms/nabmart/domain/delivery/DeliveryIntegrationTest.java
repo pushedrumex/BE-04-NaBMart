@@ -20,6 +20,7 @@ import com.prgrms.nabmart.domain.order.OrderItem;
 import com.prgrms.nabmart.domain.order.OrderStatus;
 import com.prgrms.nabmart.domain.order.repository.OrderItemRepository;
 import com.prgrms.nabmart.domain.order.repository.OrderRepository;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
 import com.prgrms.nabmart.domain.user.support.UserFixture;
@@ -68,6 +69,9 @@ public class DeliveryIntegrationTest {
     DeliveryRepository deliveryRepository;
 
     @Autowired
+    StatisticsRepository statisticsRepository;
+
+    @Autowired
     DeliveryService deliveryService;
 
     @Autowired
@@ -101,8 +105,8 @@ public class DeliveryIntegrationTest {
     MainCategory mainCategory = CategoryFixture.mainCategory();
     SubCategory subCategory = CategoryFixture.subCategory(mainCategory);
     Item item = ItemFixture.item(mainCategory, subCategory);
-    OrderItem orderItem = new OrderItem(item, 5);
-    Order order = new Order(user, List.of(orderItem));
+    OrderItem orderItem;
+    Order order;
 
     @BeforeEach
     void setUpData() {
@@ -110,6 +114,9 @@ public class DeliveryIntegrationTest {
         mainCategoryRepository.save(mainCategory);
         subCategoryRepository.save(subCategory);
         itemRepository.save(item);
+
+        orderItem = new OrderItem(item, 5);
+        order = new Order(user, List.of(orderItem));
         ReflectionTestUtils.setField(order, "status", OrderStatus.PAYED);
         orderRepository.save(order);
     }
@@ -122,6 +129,7 @@ public class DeliveryIntegrationTest {
         EntityManager em = emf.createEntityManager();
         EntityTransaction tx = em.getTransaction();
         tx.begin();
+        em.createQuery("delete from Statistics").executeUpdate();
         em.createQuery("delete from Item").executeUpdate(); // 소프트 딜리트 아이템 강제 삭제
         tx.commit();
         subCategoryRepository.deleteAll();

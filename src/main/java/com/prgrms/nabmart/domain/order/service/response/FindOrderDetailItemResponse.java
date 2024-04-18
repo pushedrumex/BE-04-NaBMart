@@ -11,10 +11,10 @@ public record FindOrderDetailItemResponse(
 
     public static FindOrderDetailItemResponse from(final OrderItem orderItem) {
         return new FindOrderDetailItemResponse(
-            orderItem.getItem().getItemId(),
-            orderItem.getItem().getName(),
+            orderItem.getItemId(),
+            orderItem.getItemName(),
             orderItem.getQuantity(),
-            orderItem.getItem().getPrice()
+            orderItem.getItemPrice()
         );
     }
 }

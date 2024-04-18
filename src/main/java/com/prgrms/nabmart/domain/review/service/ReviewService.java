@@ -11,6 +11,8 @@ import com.prgrms.nabmart.domain.review.service.request.RegisterReviewCommand;
 import com.prgrms.nabmart.domain.review.service.request.UpdateReviewCommand;
 import com.prgrms.nabmart.domain.review.service.response.FindReviewsByItemResponse;
 import com.prgrms.nabmart.domain.review.service.response.FindReviewsByUserResponse;
+import com.prgrms.nabmart.domain.statistics.Statistics;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.exception.NotFoundUserException;
 import com.prgrms.nabmart.domain.user.repository.UserRepository;
@@ -26,6 +28,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
+    private final StatisticsRepository statisticsRepository;
     private final RedisCacheService redisCacheService;
 
     private static final String REVIEW_COUNT_CACHE_KEY = "reviewCount:Item:";
@@ -48,6 +51,7 @@ public class ReviewService {
             .build();
 
         Review savedReview = reviewRepository.save(review);
+        statisticsRepository.increaseReviews(foundItem.getItemId());
 
         String cacheKey = REVIEW_COUNT_CACHE_KEY + foundItem.getItemId();
 
@@ -66,6 +70,7 @@ public class ReviewService {
             .orElseThrow(() -> new NotFoundReviewException("해당 리뷰를 찾을 수 없습니다."));
 
         reviewRepository.delete(foundReview);
+        statisticsRepository.decreaseReviews(foundReview.getItem().getItemId());
 
         String cacheKey = REVIEW_COUNT_CACHE_KEY + foundReview.getItem().getItemId();
         redisCacheService.minusOneToTotalNumberOfReviewsByItemId(foundReview.getItem().getItemId(),

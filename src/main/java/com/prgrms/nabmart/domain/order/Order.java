@@ -89,8 +89,8 @@ public class Order extends BaseTimeEntity {
 
     private void createOrderName(final List<OrderItem> orderItems) {
         this.name = (orderItems.size() == 1) ?
-            orderItems.get(0).getItem().getName() :
-            orderItems.get(0).getItem().getName() + "외 " + (orderItems.size() - 1) + "개";
+            orderItems.get(0).getItemName() :
+            orderItems.get(0).getItemName() + "외 " + (orderItems.size() - 1) + "개";
     }
 
     private void setOrderItems(final List<OrderItem> orderItems) {

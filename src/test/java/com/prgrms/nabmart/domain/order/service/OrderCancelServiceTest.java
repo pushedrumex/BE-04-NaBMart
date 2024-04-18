@@ -10,6 +10,7 @@ import com.prgrms.nabmart.domain.item.repository.ItemRepository;
 import com.prgrms.nabmart.domain.order.Order;
 import com.prgrms.nabmart.domain.order.OrderItem;
 import com.prgrms.nabmart.domain.order.OrderStatus;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ class OrderCancelServiceTest {
     @Mock
     ItemRepository itemRepository;
 
+    @Mock
+    StatisticsRepository statisticsRepository;
+
     @Nested
     @DisplayName("cancelOrder 메서드 실행 시")
     class CancelOrderTest {
@@ -43,8 +47,9 @@ class OrderCancelServiceTest {
 
             // then
             assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELED);
-            verify(itemRepository, times(1)).increaseQuantity(orderItem.getItem().getItemId(),
+            verify(itemRepository, times(1)).increaseQuantity(orderItem.getItemId(),
                 orderItem.getQuantity());
+            verify(statisticsRepository, times(1)).decreaseOrders(orderItem.getItemId(), orderItem.getQuantity());
         }
     }
 

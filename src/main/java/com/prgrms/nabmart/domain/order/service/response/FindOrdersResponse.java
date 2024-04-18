@@ -13,7 +13,7 @@ public record FindOrdersResponse(
         return new FindOrdersResponse(
             orders.stream()
                 .map(FindOrderResponse::from)
-                .collect(Collectors.toList()),
+                .toList(),
             totalPages
         );
     }

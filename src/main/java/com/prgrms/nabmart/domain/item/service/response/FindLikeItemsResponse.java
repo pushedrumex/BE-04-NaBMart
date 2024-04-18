@@ -25,8 +25,8 @@ public record FindLikeItemsResponse(
         String name,
         int price,
         int discount,
-        int reviewCount,
-        int like,
+        Long reviewCount,
+        Long like,
         double rate) {
 
         public static FindLikeItemResponse from(final LikeItem likeItem) {
@@ -37,8 +37,8 @@ public record FindLikeItemsResponse(
                 item.getName(),
                 item.getPrice(),
                 item.getDiscount(),
-                item.getReviews().size(),
-                item.getLikeItems().size(),
+                item.getStatistics().getReviews(),
+                item.getStatistics().getLikes(),
                 item.getRate());
         }
     }

@@ -93,9 +93,9 @@ public class ItemService {
             item.getDescription(),
             item.getQuantity(),
             item.getRate(),
-            item.getReviews().size(),
+            item.getStatistics().getReviews(),
             item.getDiscount(),
-            item.getLikeItems().size(),
+            item.getStatistics().getLikes(),
             item.getMaxBuyQuantity()
         );
     }

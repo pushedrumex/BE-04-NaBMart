@@ -54,8 +54,8 @@ public class EventService {
                     eventItem.getItem().getName(),
                     eventItem.getItem().getPrice(),
                     eventItem.getItem().getDiscount(),
-                    eventItem.getItem().getReviews().size(),
-                    eventItem.getItem().getLikeItems().size(),
+                    eventItem.getItem().getStatistics().getReviews(),
+                    eventItem.getItem().getStatistics().getLikes(),
                     eventItem.getItem().getRate()
                 )
             ).collect(Collectors.toList());

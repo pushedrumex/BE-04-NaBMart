@@ -38,9 +38,9 @@ public record FindDeliveryDetailResponse(
 
         public static OrderItemResponse from(final OrderItem orderItem) {
             return new OrderItemResponse(
-                orderItem.getItem().getName(),
+                orderItem.getItemName(),
                 orderItem.getQuantity(),
-                orderItem.getItem().getPrice());
+                orderItem.getItemPrice());
         }
     }
 }

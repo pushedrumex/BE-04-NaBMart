@@ -2,8 +2,11 @@ package com.prgrms.nabmart.domain.review.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.prgrms.nabmart.domain.category.MainCategory;
 import com.prgrms.nabmart.domain.category.SubCategory;
@@ -20,6 +23,7 @@ import com.prgrms.nabmart.domain.review.service.response.FindReviewsByUserRespon
 import com.prgrms.nabmart.domain.review.support.RegisterReviewCommandFixture;
 import com.prgrms.nabmart.domain.review.support.ReviewFixture;
 import com.prgrms.nabmart.domain.review.support.UpdateReviewCommandFixture;
+import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import com.prgrms.nabmart.domain.user.User;
 import com.prgrms.nabmart.domain.user.UserGrade;
 import com.prgrms.nabmart.domain.user.UserRole;
@@ -46,6 +50,9 @@ class ReviewServiceTest {
 
     @Mock
     private ReviewRepository reviewRepository;
+
+    @Mock
+    private StatisticsRepository statisticsRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -90,6 +97,7 @@ class ReviewServiceTest {
 
             // then
             then(reviewRepository).should().save(any());
+            verify(statisticsRepository, times(1)).increaseReviews(any());
         }
     }
 
@@ -110,6 +118,7 @@ class ReviewServiceTest {
 
             // then
             then(reviewRepository).should().delete(any());
+            verify(statisticsRepository, times(1)).decreaseReviews(any());
         }
     }
 

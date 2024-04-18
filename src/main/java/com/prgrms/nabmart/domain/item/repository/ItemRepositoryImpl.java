@@ -1,9 +1,8 @@
 package com.prgrms.nabmart.domain.item.repository;
 
 import static com.prgrms.nabmart.domain.item.QItem.item;
-import static com.prgrms.nabmart.domain.item.QLikeItem.likeItem;
 import static com.prgrms.nabmart.domain.order.QOrderItem.orderItem;
-import static com.prgrms.nabmart.domain.review.QReview.review;
+import static com.prgrms.nabmart.domain.statistics.QStatistics.statistics;
 
 import com.prgrms.nabmart.domain.category.MainCategory;
 import com.prgrms.nabmart.domain.category.SubCategory;
@@ -40,13 +39,11 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
 
         return queryFactory
             .selectFrom(item)
-            .leftJoin(item.reviews, review)
-            .leftJoin(item.likeItems, likeItem)
-            .leftJoin(item.orderItems, orderItem)
+            .join(item.statistics, statistics)
             .where(predicate)
             .groupBy(item)
             .having(
-                getHavingCondition(lastIdx, lastItemId, sortType)
+                getCondition(lastIdx, lastItemId, sortType)
             )
             .orderBy(orderSpecifier, item.itemId.asc())
             .offset(pageable.getOffset())
@@ -61,18 +58,16 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         Predicate predicate = item.rate.gt(HOT_PRODUCT_REFERENCE_RATE);
         Predicate orderCondition = JPAExpressions.select(orderItem.quantity.sum().coalesce(0))
             .from(orderItem)
-            .where(orderItem.item.eq(item))
+            .where(orderItem.itemId.eq(item.itemId))
             .gt(HOT_PRODUCT_REFERENCE_ORDERS);
 
         return queryFactory
             .selectFrom(item)
-            .leftJoin(item.reviews, review)
-            .leftJoin(item.likeItems, likeItem)
-            .leftJoin(item.orderItems, orderItem)
-            .where(predicate)
+            .join(item.statistics, statistics)
+            .where(predicate, getCondition(lastIdx, lastItemId, sortType))
             .groupBy(item)
             .having(
-                getHavingCondition(lastIdx, lastItemId, sortType),
+                getCondition(lastIdx, lastItemId, sortType),
                 orderCondition
             )
             .orderBy(orderSpecifier, item.itemId.asc())
@@ -88,9 +83,8 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         Predicate mainCategoryCondition = item.mainCategory.eq(mainCategory);
         OrderSpecifier orderSpecifier = createOrderSpecifier(sortType);
 
-        return buildDataSetJPAQuery(sortType)
+        return queryFactory.selectFrom(item)
             .where(mainCategoryCondition, getCondition(lastIdx, lastItemId, sortType))
-            .groupBy(item.itemId)
             .orderBy(orderSpecifier, item.itemId.desc())
             .limit(pageable.getPageSize())
             .fetch();
@@ -104,39 +98,12 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
         Predicate subCategoryCondition = item.subCategory.eq(subCategory);
         OrderSpecifier orderSpecifier = createOrderSpecifier(sortType);
 
-        return buildDataSetJPAQuery(sortType)
+        return queryFactory.selectFrom(item)
             .where(mainCategoryCondition, subCategoryCondition,
                 getCondition(lastIdx, lastItemId, sortType))
-            .groupBy(item.itemId)
             .orderBy(orderSpecifier, item.itemId.desc())
             .limit(pageable.getPageSize())
             .fetch();
-    }
-
-    private JPAQuery<Item> buildDataSetJPAQuery(ItemSortType sortType) {
-        JPAQuery<Item> itemJPAQuery = queryFactory.selectFrom(item);
-        if (sortType.isPopular()) {
-            return itemJPAQuery
-                .leftJoin(item.orderItems, orderItem);
-        }
-        return itemJPAQuery;
-    }
-
-
-    private Predicate getHavingCondition(Long lastIdx, Long lastItemId, ItemSortType sortType) {
-        return switch (sortType) {
-            case NEW -> item.itemId.lt(lastIdx);
-            case HIGHEST_AMOUNT -> item.price.lt(lastIdx)
-                .or(item.price.eq(lastIdx.intValue()).and(item.itemId.gt(lastItemId)));
-            case LOWEST_AMOUNT -> item.price.gt(lastIdx)
-                .or(item.price.eq(lastIdx.intValue()).and(item.itemId.gt(lastItemId)));
-            case DISCOUNT -> item.discount.lt(lastIdx)
-                .or(item.discount.eq(lastIdx.intValue()).and(item.itemId.gt(lastItemId)));
-            default -> JPAExpressions.select(orderItem.quantity.longValue().sum().coalesce(0L))
-                .from(orderItem)
-                .where(orderItem.item.eq(item))
-                .lt(lastIdx);
-        };
     }
 
     private Predicate getCondition(Long lastIdx, Long lastItemId, ItemSortType sortType) {
@@ -148,10 +115,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
                 .or(item.price.eq(lastIdx.intValue()).and(item.itemId.lt(lastItemId)));
             case DISCOUNT -> item.discount.lt(lastIdx)
                 .or(item.discount.eq(lastIdx.intValue()).and(item.itemId.lt(lastItemId)));
-            default -> JPAExpressions.select(orderItem.quantity.longValue().sum().coalesce(0L))
-                .from(orderItem)
-                .where(orderItem.item.eq(item))
-                .lt(lastIdx);
+            default -> item.statistics.orders.lt(lastIdx);
         };
     }
 
@@ -162,7 +126,7 @@ public class ItemRepositoryImpl implements ItemRepositoryCustom {
             case HIGHEST_AMOUNT -> new OrderSpecifier<>(Order.DESC, item.price);
             case LOWEST_AMOUNT -> new OrderSpecifier<>(Order.ASC, item.price);
             case DISCOUNT -> new OrderSpecifier<>(Order.DESC, item.discount);
-            default -> new OrderSpecifier<>(Order.DESC, item.orderItems.any().quantity.sum());
+            default -> new OrderSpecifier<>(Order.DESC, item.statistics.orders);
         };
     }
 }
