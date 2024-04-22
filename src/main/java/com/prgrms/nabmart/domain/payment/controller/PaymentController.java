@@ -37,10 +37,12 @@ public class PaymentController {
         @RequestParam("amount") Integer amount,
         @LoginUser Long userId
     ) {
+        PaymentResponse paymentResponse = paymentService.processSuccessPayment(userId, uuid,
+            paymentKey, amount);
+
         paymentClient.confirmPayment(uuid, paymentKey, amount);
 
-        return ResponseEntity.ok(
-            paymentService.processSuccessPayment(userId, uuid, paymentKey, amount));
+        return ResponseEntity.ok(paymentResponse);
     }
 
     @GetMapping("/toss/fail")
