@@ -17,7 +17,6 @@ import com.prgrms.nabmart.domain.order.repository.OrderItemRepository;
 import com.prgrms.nabmart.domain.statistics.StatisticsRepository;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.AfterEach;
@@ -47,7 +46,7 @@ class ItemRepositoryTest {
     EntityManager entityManager;
 
     @AfterEach
-    public void teardown() {
+    void teardown() {
         this.itemRepository.deleteAll();
         this.entityManager
             .createNativeQuery("ALTER TABLE item ALTER COLUMN `item_id` RESTART WITH 1")
@@ -63,7 +62,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("최신순으로 조회된다.")
-        public void findByItemIdLessThanAndMainCategoryOrderByItemIdDesc() {
+        void findByItemIdLessThanAndMainCategoryOrderByItemIdDesc() {
             //Given
             List<Item> savedItems = new ArrayList<>();
             mainCategoryRepository.save(mainCategory);
@@ -75,28 +74,18 @@ class ItemRepositoryTest {
 
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
-            List<Item> items = itemRepository.findByMainCategoryOrderBy(
-                mainCategory, 30L, Long.MAX_VALUE,
+            List<Item> result = itemRepository.findByMainCategoryOrderBy(mainCategory,
                 ItemSortType.NEW, pageRequest);
 
             // Then
-            assertThat(items.size()).isEqualTo(5);
-            List<Item> expectedItems = savedItems.subList(24, 29);
-            Collections.reverse(expectedItems);
-            List<String> actual = items.stream()
-                .map(Item::getName)
-                .toList();
-            List<String> expected = expectedItems.stream()
-                .map(Item::getName)
-                .toList();
-
-            assertThat(actual).usingRecursiveComparison()
-                .isEqualTo(expected);
+            assertThat(result).hasSize(5);
+            savedItems.sort((o1, o2) -> Math.toIntExact(o2.getItemId() - o1.getItemId()));
+            assertThat(result).usingRecursiveComparison().isEqualTo(savedItems.subList(0, 5));
         }
 
         @Test
         @DisplayName("할인율 높은 순으로 조회된다.")
-        public void findByItemIdLessThanAndMainCategoryOrderByItemIdDescDiscountDesc() {
+        void findByItemIdLessThanAndMainCategoryOrderByItemIdDescDiscountDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             subCategoryRepository.save(subCategory);
@@ -108,8 +97,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findByMainCategoryOrderBy(
-                mainCategory, 100L, Long.MAX_VALUE,
-                ItemSortType.DISCOUNT, pageRequest);
+                mainCategory, ItemSortType.DISCOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -117,7 +105,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("금액 높은 순으로 조회된다.")
-        public void findByPriceLessThanAndMainCategoryOrderByPriceDescItemIdDesc() {
+        void findByPriceLessThanAndMainCategoryOrderByPriceDescItemIdDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             for (int i = 0; i < 50; i++) {
@@ -128,8 +116,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findByMainCategoryOrderBy(
-                mainCategory, 10000L, Long.MAX_VALUE,
-                ItemSortType.HIGHEST_AMOUNT, pageRequest);
+                mainCategory, ItemSortType.HIGHEST_AMOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -137,7 +124,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("금액 낮은 순으로 조회된다.")
-        public void findByPriceGreaterThanAndMainCategoryOrderByPriceAscItemIdDesc() {
+        void findByPriceGreaterThanAndMainCategoryOrderByPriceAscItemIdDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             subCategoryRepository.save(subCategory);
@@ -148,8 +135,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findByMainCategoryOrderBy(
-                mainCategory, 0L, Long.MAX_VALUE,
-                ItemSortType.LOWEST_AMOUNT, pageRequest);
+                mainCategory, ItemSortType.LOWEST_AMOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -158,7 +144,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("인기 순으로 조회된다.")
-        public void findByOrderCount() {
+        void findByOrderCount() {
 
             //Given
             mainCategoryRepository.save(mainCategory);
@@ -175,8 +161,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findByMainCategoryOrderBy(
-                mainCategory, 10000L, Long.MAX_VALUE,
-                ItemSortType.POPULAR, pageRequest);
+                mainCategory, ItemSortType.POPULAR, pageRequest);
 
             // Then
             assertThat(items).map(Item::getItemId)
@@ -193,7 +178,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("최신순으로 조회된다.")
-        public void findByItemIdLessThanAndMainCategoryOrderByItemIdDesc() {
+        void findByItemIdLessThanAndMainCategoryOrderByItemIdDesc() {
             //Given
             List<Item> savedItems = new ArrayList<>();
             mainCategoryRepository.save(mainCategory);
@@ -204,29 +189,20 @@ class ItemRepositoryTest {
             }
 
             // When
-            PageRequest pageRequest = PageRequest.of(0, 5);
-            List<Item> items = itemRepository.findBySubCategoryOrderBy(
-                mainCategory, subCategory, 30L, Long.MAX_VALUE,
-                ItemSortType.NEW, pageRequest);
+            List<Item> result = itemRepository.findBySubCategoryOrderBy(
+                mainCategory, subCategory, ItemSortType.NEW, PageRequest.of(0, 5));
 
             // Then
-            assertThat(items.size()).isEqualTo(5);
-            List<Item> expectedItems = savedItems.subList(24, 29);
-            Collections.reverse(expectedItems);
-            List<String> actual = items.stream()
-                .map(Item::getName)
-                .toList();
-            List<String> expected = expectedItems.stream()
-                .map(Item::getName)
-                .toList();
+            assertThat(result).hasSize(5);
+            savedItems.sort((o1, o2) -> Math.toIntExact(o2.getItemId() - o1.getItemId()));
 
-            assertThat(actual).usingRecursiveComparison()
-                .isEqualTo(expected);
+            assertThat(result).usingRecursiveComparison()
+                .isEqualTo(savedItems.subList(0, 5));
         }
 
         @Test
         @DisplayName("할인율 높은 순으로 조회된다.")
-        public void findByItemIdLessThanAndMainCategoryOrderByItemIdDescDiscountDesc() {
+        void findByItemIdLessThanAndMainCategoryOrderByItemIdDescDiscountDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             subCategoryRepository.save(subCategory);
@@ -239,8 +215,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findBySubCategoryOrderBy(
-                mainCategory, subCategory, 100L, Long.MAX_VALUE,
-                ItemSortType.DISCOUNT, pageRequest);
+                mainCategory, subCategory, ItemSortType.DISCOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -248,7 +223,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("금액 높은 순으로 조회된다.")
-        public void findByPriceLessThanAndMainCategoryOrderByPriceDescItemIdDesc() {
+        void findByPriceLessThanAndMainCategoryOrderByPriceDescItemIdDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             subCategoryRepository.save(subCategory);
@@ -260,8 +235,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findBySubCategoryOrderBy(
-                mainCategory, subCategory, 100000L, Long.MAX_VALUE,
-                ItemSortType.HIGHEST_AMOUNT, pageRequest);
+                mainCategory, subCategory, ItemSortType.HIGHEST_AMOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -269,7 +243,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("금액 낮은 순으로 조회된다.")
-        public void findByPriceGreaterThanAndMainCategoryOrderByPriceAscItemIdDesc() {
+        void findByPriceGreaterThanAndMainCategoryOrderByPriceAscItemIdDesc() {
             //Given
             mainCategoryRepository.save(mainCategory);
             subCategoryRepository.save(subCategory);
@@ -281,8 +255,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findBySubCategoryOrderBy(
-                mainCategory, subCategory, 0L, Long.MAX_VALUE,
-                ItemSortType.LOWEST_AMOUNT, pageRequest);
+                mainCategory, subCategory, ItemSortType.LOWEST_AMOUNT, pageRequest);
 
             // Then
             assertThat(items.size()).isEqualTo(5);
@@ -290,7 +263,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("인기 순으로 조회된다.")
-        public void findByOrderCount() {
+        void findByOrderCount() {
 
             //Given
             mainCategoryRepository.save(mainCategory);
@@ -308,8 +281,7 @@ class ItemRepositoryTest {
             // When
             PageRequest pageRequest = PageRequest.of(0, 5);
             List<Item> items = itemRepository.findBySubCategoryOrderBy(
-                mainCategory, subCategory, 10000L, Long.MAX_VALUE,
-                ItemSortType.POPULAR, pageRequest);
+                mainCategory, subCategory, ItemSortType.POPULAR, pageRequest);
 
             List<Long> actual = items.stream()
                 .map(Item::getItemId)
@@ -323,7 +295,7 @@ class ItemRepositoryTest {
 
     @Test
     @DisplayName("아이템 삭제 시, 아이템 조회가 안된다.")
-    public void deleteItem() {
+    void deleteItem() {
         // Given
         MainCategory mainCategory = new MainCategory("main");
         SubCategory subCategory = new SubCategory(mainCategory, "sub");
@@ -344,7 +316,7 @@ class ItemRepositoryTest {
 
         @Test
         @DisplayName("성공")
-        public void success() {
+        void success() {
             // Given
             int increaseQuantity = 100;
             Item item = item();

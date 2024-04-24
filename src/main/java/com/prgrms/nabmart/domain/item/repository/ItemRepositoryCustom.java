@@ -9,15 +9,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface ItemRepositoryCustom {
 
-    List<Item> findNewItemsOrderBy(Long lastIdx, Long lastItemId, ItemSortType sortType,
-        Pageable pageable);
+    List<Item> findNewItemsOrderBy(Pageable pageable);
 
-    List<Item> findHotItemsOrderBy(Long lastIdx, Long lastItemId, ItemSortType sortType,
-        Pageable pageable);
+    List<Item> findHotItemsOrderBy(Pageable pageable);
 
-    List<Item> findByMainCategoryOrderBy(MainCategory mainCategory, Long lastIdx, Long lastItemId,
-        ItemSortType sortType, Pageable pageable);
+    List<Item> findByMainCategoryOrderBy(MainCategory mainCategory, ItemSortType sortType,
+        Pageable pageable);
 
     List<Item> findBySubCategoryOrderBy(MainCategory mainCategory, SubCategory subCategory,
-        Long lastIdx, Long lastItemId, ItemSortType sortType, Pageable pageable);
+        ItemSortType sortType, Pageable pageable);
 }

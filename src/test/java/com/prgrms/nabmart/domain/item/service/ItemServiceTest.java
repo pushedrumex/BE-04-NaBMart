@@ -132,8 +132,8 @@ class ItemServiceTest {
                 ItemSortType.NEW);
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
-            when(itemRepository.findByMainCategoryOrderBy(any(), anyLong(), anyLong(), any(),
-                any())).thenReturn(expectedItems);
+            when(itemRepository.findByMainCategoryOrderBy(any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -154,8 +154,8 @@ class ItemServiceTest {
             FindItemsByCategoryCommand findItemsByCategoryCommand = getFindItemsByCategoryCommand(
                 ItemSortType.DISCOUNT);
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
-            when(itemRepository.findByMainCategoryOrderBy(
-                any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findByMainCategoryOrderBy(any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -174,8 +174,8 @@ class ItemServiceTest {
                 ItemSortType.HIGHEST_AMOUNT);
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
-            when(itemRepository.findByMainCategoryOrderBy(any(), anyLong(), anyLong(), any(),
-                any())).thenReturn(expectedItems);
+            when(itemRepository.findByMainCategoryOrderBy(any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -194,8 +194,8 @@ class ItemServiceTest {
                 ItemSortType.LOWEST_AMOUNT);
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
-            when(itemRepository.findByMainCategoryOrderBy(any(), anyLong(), anyLong(), any(),
-                any())).thenReturn(expectedItems);
+            when(itemRepository.findByMainCategoryOrderBy(any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -214,8 +214,8 @@ class ItemServiceTest {
                 ItemSortType.POPULAR);
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
-            when(itemRepository.findByMainCategoryOrderBy(
-                any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findByMainCategoryOrderBy(any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -227,8 +227,7 @@ class ItemServiceTest {
 
         private FindItemsByCategoryCommand getFindItemsByCategoryCommand(
             ItemSortType itemSortType) {
-            return new FindItemsByCategoryCommand(
-                -1L, -1L, mainCategory.getName(), null,
+            return new FindItemsByCategoryCommand(mainCategory.getName(), null,
                 PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE),
                 itemSortType);
         }
@@ -288,8 +287,8 @@ class ItemServiceTest {
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
             when(subCategoryRepository.findByName(any())).thenReturn(Optional.of(subCategory));
-            when(itemRepository.findBySubCategoryOrderBy(
-                any(), any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findBySubCategoryOrderBy(any(), any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -312,8 +311,8 @@ class ItemServiceTest {
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
             when(subCategoryRepository.findByName(any())).thenReturn(Optional.of(subCategory));
-            when(itemRepository.findBySubCategoryOrderBy(
-                any(), any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findBySubCategoryOrderBy(any(), any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -333,8 +332,8 @@ class ItemServiceTest {
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
             when(subCategoryRepository.findByName(any())).thenReturn(Optional.of(subCategory));
-            when(itemRepository.findBySubCategoryOrderBy(
-                any(), any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findBySubCategoryOrderBy(any(), any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -354,8 +353,8 @@ class ItemServiceTest {
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
             when(subCategoryRepository.findByName(any())).thenReturn(Optional.of(subCategory));
-            when(itemRepository.findBySubCategoryOrderBy(
-                any(), any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findBySubCategoryOrderBy(any(), any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -375,8 +374,8 @@ class ItemServiceTest {
 
             when(mainCategoryRepository.findByName(any())).thenReturn(Optional.of(mainCategory));
             when(subCategoryRepository.findByName(any())).thenReturn(Optional.of(subCategory));
-            when(itemRepository.findBySubCategoryOrderBy(
-                any(), any(), anyLong(), anyLong(), any(), any())).thenReturn(expectedItems);
+            when(itemRepository.findBySubCategoryOrderBy(any(), any(), any(), any())).thenReturn(
+                expectedItems);
 
             // When
             FindItemsResponse itemsResponse = itemService.findItemsByCategory(
@@ -388,8 +387,7 @@ class ItemServiceTest {
 
         private FindItemsByCategoryCommand getFindItemsByCategoryCommand(
             ItemSortType itemSortType) {
-            return new FindItemsByCategoryCommand(
-                -1L, -1L, mainCategory.getName(), subCategory.getName(),
+            return new FindItemsByCategoryCommand(mainCategory.getName(), subCategory.getName(),
                 PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE),
                 itemSortType);
         }
@@ -506,7 +504,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item1, item2, item3);
             FindNewItemsCommand command = getFindNewItemsCommand(ItemSortType.NEW);
 
-            when(itemRepository.findNewItemsOrderBy(anyLong(), anyLong(), any(), any())).thenReturn(
+            when(itemRepository.findNewItemsOrderBy(any())).thenReturn(
                 expectedItems);
 
             // When
@@ -525,7 +523,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item3, item2, item1);
             FindNewItemsCommand command = getFindNewItemsCommand(ItemSortType.DISCOUNT);
 
-            when(itemRepository.findNewItemsOrderBy(anyLong(), anyLong(), any(), any())).thenReturn(
+            when(itemRepository.findNewItemsOrderBy(any())).thenReturn(
                 expectedItems);
 
             // When
@@ -544,7 +542,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item3, item2, item1);
             FindNewItemsCommand command = getFindNewItemsCommand(ItemSortType.HIGHEST_AMOUNT);
 
-            when(itemRepository.findNewItemsOrderBy(anyLong(), anyLong(), any(), any())).thenReturn(
+            when(itemRepository.findNewItemsOrderBy(any())).thenReturn(
                 expectedItems);
 
             // When
@@ -563,7 +561,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item1, item2, item3);
             FindNewItemsCommand command = getFindNewItemsCommand(ItemSortType.LOWEST_AMOUNT);
 
-            when(itemRepository.findNewItemsOrderBy(anyLong(), anyLong(), any(), any())).thenReturn(
+            when(itemRepository.findNewItemsOrderBy(any())).thenReturn(
                 expectedItems);
 
             // When
@@ -582,7 +580,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item2, item3);
             FindNewItemsCommand command = getFindNewItemsCommand(ItemSortType.POPULAR);
 
-            when(itemRepository.findNewItemsOrderBy(anyLong(), anyLong(), any(), any())).thenReturn(
+            when(itemRepository.findNewItemsOrderBy(any())).thenReturn(
                 expectedItems);
 
             // When
@@ -593,9 +591,7 @@ class ItemServiceTest {
         }
 
         private FindNewItemsCommand getFindNewItemsCommand(ItemSortType itemSortType) {
-            return new FindNewItemsCommand(-1L, -1L,
-                PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE),
-                itemSortType);
+            return new FindNewItemsCommand(PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE));
         }
     }
 
@@ -645,7 +641,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item1, item2, item3);
             FindHotItemsCommand command = getFindHotItemsCommand(ItemSortType.NEW);
 
-            when(itemRepository.findHotItemsOrderBy(anyLong(), anyLong(), any(), any()))
+            when(itemRepository.findHotItemsOrderBy(any()))
                 .thenReturn(expectedItems);
 
             // When
@@ -664,7 +660,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item3, item2, item1);
             FindHotItemsCommand command = getFindHotItemsCommand(ItemSortType.DISCOUNT);
 
-            when(itemRepository.findHotItemsOrderBy(anyLong(), anyLong(), any(), any()))
+            when(itemRepository.findHotItemsOrderBy(any()))
                 .thenReturn(expectedItems);
 
             // When
@@ -683,7 +679,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item3, item2, item1);
             FindHotItemsCommand command = getFindHotItemsCommand(ItemSortType.HIGHEST_AMOUNT);
 
-            when(itemRepository.findHotItemsOrderBy(anyLong(), anyLong(), any(), any()))
+            when(itemRepository.findHotItemsOrderBy(any()))
                 .thenReturn(expectedItems);
 
             // When
@@ -702,7 +698,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item1, item2, item3);
             FindHotItemsCommand command = getFindHotItemsCommand(ItemSortType.LOWEST_AMOUNT);
 
-            when(itemRepository.findHotItemsOrderBy(anyLong(), anyLong(), any(), any()))
+            when(itemRepository.findHotItemsOrderBy(any()))
                 .thenReturn(expectedItems);
 
             // When
@@ -721,7 +717,7 @@ class ItemServiceTest {
             List<Item> expectedItems = List.of(item2, item3);
             FindHotItemsCommand command = getFindHotItemsCommand(ItemSortType.POPULAR);
 
-            when(itemRepository.findHotItemsOrderBy(anyLong(), anyLong(), any(), any()))
+            when(itemRepository.findHotItemsOrderBy(any()))
                 .thenReturn(expectedItems);
 
             // When
@@ -732,9 +728,7 @@ class ItemServiceTest {
         }
 
         private FindHotItemsCommand getFindHotItemsCommand(ItemSortType itemSortType) {
-            return new FindHotItemsCommand(-1L, -1L,
-                PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE),
-                itemSortType);
+            return new FindHotItemsCommand(PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE));
         }
     }
 }
