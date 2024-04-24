@@ -14,7 +14,6 @@ import com.prgrms.nabmart.domain.item.controller.request.UpdateItemRequest;
 import com.prgrms.nabmart.domain.item.service.request.DeleteLikeItemCommand;
 import com.prgrms.nabmart.domain.item.service.request.FindItemsByCategoryCommand;
 import com.prgrms.nabmart.domain.item.service.request.FindLikeItemsCommand;
-import com.prgrms.nabmart.domain.item.service.request.FindNewItemsCommand;
 import com.prgrms.nabmart.domain.item.service.request.RegisterItemCommand;
 import com.prgrms.nabmart.domain.item.service.request.UpdateItemCommand;
 import com.prgrms.nabmart.domain.item.service.response.FindItemsResponse;
@@ -78,7 +77,7 @@ public final class ItemFixture {
 
     public static FindItemsByCategoryCommand findItemsByCategoryCommand(
         String mainCategoryName, String subCategoryName) {
-        return FindItemsByCategoryCommand.of(-1L, -1L, mainCategoryName, subCategoryName, 3,
+        return FindItemsByCategoryCommand.of(0, 10, mainCategoryName, subCategoryName,
             ITEM_SORT_TYPE);
     }
 
@@ -108,11 +107,6 @@ public final class ItemFixture {
             RATE
         );
         return new FindLikeItemsResponse(List.of(findLikeItemResponse), 0, 1);
-    }
-
-    public static FindNewItemsCommand findNewItemsCommand() {
-        PageRequest pageRequest = PageRequest.of(0, 5);
-        return new FindNewItemsCommand(null, null, pageRequest, ItemSortType.NEW);
     }
 
     public static UpdateItemRequest updateItemRequest() {

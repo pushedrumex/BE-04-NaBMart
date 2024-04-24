@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +41,13 @@ public class ItemController {
 
     @GetMapping
     public ResponseEntity<FindItemsResponse> findItemsByCategory(
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastItemId,
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastIdx,
-        @RequestParam int size,
+        Pageable pageable,
         @RequestParam String main,
         @RequestParam(required = false) String sub,
         @RequestParam String sort) {
 
         FindItemsByCategoryCommand findItemsByCategoryCommand = FindItemsByCategoryCommand.of(
-            lastItemId, lastIdx, main, sub, size, sort);
+            pageable.getPageNumber(), pageable.getPageSize(), main, sub, sort);
         FindItemsResponse findItemsResponse = itemService.findItemsByCategory(
             findItemsByCategoryCommand);
         return ResponseEntity.ok(findItemsResponse);
@@ -61,14 +60,9 @@ public class ItemController {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<FindItemsResponse> findNewItems(
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastIdx,
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastItemId,
-        @RequestParam int size,
-        @RequestParam(defaultValue = "POPULAR") String sort
-    ) {
-        FindNewItemsCommand findNewItemsCommand = FindNewItemsCommand.of(lastIdx, lastItemId, size,
-            sort);
+    public ResponseEntity<FindItemsResponse> findNewItems(Pageable pageable) {
+        FindNewItemsCommand findNewItemsCommand = FindNewItemsCommand.of(pageable.getPageNumber(),
+            pageable.getPageSize());
         return ResponseEntity.ok(itemService.findNewItems(findNewItemsCommand));
     }
 
@@ -80,14 +74,9 @@ public class ItemController {
     }
 
     @GetMapping("/hot")
-    public ResponseEntity<FindItemsResponse> findHotItems(
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastIdx,
-        @RequestParam(defaultValue = DEFAULT_PREVIOUS_ID) Long lastItemId,
-        @RequestParam int size,
-        @RequestParam(defaultValue = "POPULAR") String sort
-    ) {
-        FindHotItemsCommand findHotItemsCommand = FindHotItemsCommand.of(lastIdx, lastItemId, size,
-            sort);
+    public ResponseEntity<FindItemsResponse> findHotItems(Pageable pageable) {
+        FindHotItemsCommand findHotItemsCommand = FindHotItemsCommand.of(pageable.getPageSize(),
+            pageable.getPageSize());
         return ResponseEntity.ok(itemService.findHotItems(findHotItemsCommand));
     }
 

@@ -20,7 +20,6 @@ import com.prgrms.nabmart.domain.item.service.response.FindItemsResponse;
 import com.prgrms.nabmart.domain.item.service.response.FindNewItemsResponse;
 import com.prgrms.nabmart.domain.item.service.response.FindNewItemsResponse.FindNewItemResponse;
 import com.prgrms.nabmart.domain.item.service.response.ItemRedisDto;
-import com.prgrms.nabmart.domain.order.repository.OrderItemRepository;
 import com.prgrms.nabmart.domain.review.service.RedisCacheService;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -103,9 +102,7 @@ public class ItemService {
     @Transactional(readOnly = true)
     public FindItemsResponse findNewItems(FindNewItemsCommand findNewItemsCommand) {
         return FindItemsResponse.from(
-            itemRepository.findNewItemsOrderBy(findNewItemsCommand.lastIdx(),
-                findNewItemsCommand.lastItemId(), findNewItemsCommand.sortType(),
-                findNewItemsCommand.pageRequest()));
+            itemRepository.findNewItemsOrderBy(findNewItemsCommand.pageRequest()));
     }
 
     @Transactional(readOnly = true)
@@ -176,23 +173,18 @@ public class ItemService {
     private List<Item> findItemsByMainCategoryFrom(
         FindItemsByCategoryCommand findItemsByCategoryCommand) {
 
-        Long lastItemId = findItemsByCategoryCommand.lastItemId();
-        Long lastIdx = findItemsByCategoryCommand.lastIdx();
         ItemSortType itemSortType = findItemsByCategoryCommand.itemSortType();
         PageRequest pageRequest = findItemsByCategoryCommand.pageRequest();
         String mainCategoryName = findItemsByCategoryCommand.mainCategoryName().toLowerCase();
         MainCategory mainCategory = mainCategoryRepository.findByName(mainCategoryName)
             .orElseThrow(() -> new NotFoundCategoryException("없는 대카테고리입니다."));
 
-        return itemRepository.findByMainCategoryOrderBy(mainCategory, lastIdx, lastItemId,
-            itemSortType, pageRequest);
+        return itemRepository.findByMainCategoryOrderBy(mainCategory, itemSortType, pageRequest);
     }
 
     private List<Item> findItemsBySubCategoryFrom(
         FindItemsByCategoryCommand findItemsByCategoryCommand) {
 
-        Long lastItemId = findItemsByCategoryCommand.lastItemId();
-        Long lastIdx = findItemsByCategoryCommand.lastIdx();
         ItemSortType itemSortType = findItemsByCategoryCommand.itemSortType();
         PageRequest pageRequest = findItemsByCategoryCommand.pageRequest();
         String mainCategoryName = findItemsByCategoryCommand.mainCategoryName().toLowerCase();
@@ -202,15 +194,13 @@ public class ItemService {
         SubCategory subCategory = subCategoryRepository.findByName(subCategoryName)
             .orElseThrow(() -> new NotFoundCategoryException("없는 소카테고리입니다."));
 
-        return itemRepository.findBySubCategoryOrderBy(mainCategory, subCategory, lastIdx,
-            lastItemId, itemSortType, pageRequest);
+        return itemRepository.findBySubCategoryOrderBy(mainCategory, subCategory, itemSortType,
+            pageRequest);
     }
 
     @Transactional(readOnly = true)
     public FindItemsResponse findHotItems(FindHotItemsCommand findHotItemsCommand) {
-        List<Item> items = itemRepository.findHotItemsOrderBy(findHotItemsCommand.lastIdx(),
-            findHotItemsCommand.lastItemId(), findHotItemsCommand.sortType(),
-            findHotItemsCommand.pageRequest());
+        List<Item> items = itemRepository.findHotItemsOrderBy(findHotItemsCommand.pageRequest());
         return FindItemsResponse.from(items);
     }
 }
